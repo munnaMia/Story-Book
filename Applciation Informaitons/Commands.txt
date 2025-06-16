@@ -1,3 +1,3 @@
 -> go version   -- to check go version.
 
--> 
+-> curl -i -X POST/(METHOD) http://localhost:8080/  (URL)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -29,7 +28,7 @@ func blogView(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	
+
 	fmt.Fprintf(w, "Displaying a specific blog by id : %d", id)
 }
 
@@ -41,8 +40,8 @@ func blogCreate(w http.ResponseWriter, r *http.Request) {
 
 			This block of code check the method and return a 405 status code with a massage
 			"Method Not Allowed" using w.WriteHeader(http.StatusMethodNotAllowed) & w.write("Method not allowed")
-			
-			Learn more about 
+
+			Learn more about
 				- https://pkg.go.dev/net/http#pkg-constants
 				- https://pkg.go.dev/net/http#DetectContentType
 
@@ -50,7 +49,7 @@ func blogCreate(w http.ResponseWriter, r *http.Request) {
 			!) It’s only possible to call w.WriteHeader() once per response, and after the
 			status code has been written it can’t be changed. If you try to call w.WriteHeader()
 			a second time Go will log a warning message.
-			
+
 			1-- first sample:
 			-----------------
 				w.Header().Set("Allow", "POST")
@@ -62,16 +61,4 @@ func blogCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write([]byte("Create a new blog..."))
-}
-
-func main() {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/blog/view", blogView)
-	mux.HandleFunc("/blog/create", blogCreate)
-
-	log.Println("Server running at PORT: 8080")
-	err := http.ListenAndServe("localhost:8080", mux)
-	log.Fatal(err)
 }

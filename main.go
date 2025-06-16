@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +23,14 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func blogView(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("View a blog"))
+	// id which given by user should be a int and bigger then 0.
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+	
+	fmt.Fprintf(w, "Displaying a specific blog by id : %d", id)
 }
 
 func blogCreate(w http.ResponseWriter, r *http.Request) {

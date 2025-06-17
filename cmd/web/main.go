@@ -8,6 +8,10 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
+	//create a fileserver. for serving static files as a http handler form the root of the application.
+	fileserver:= http.FileServer(http.Dir("./ui/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static", fileserver))
+
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/blog/view", blogView)
 	mux.HandleFunc("/blog/create", blogCreate)

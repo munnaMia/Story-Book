@@ -1,3 +1,21 @@
+/*
+	Simple Rule : try to avoid use fatal & panic outside of main() function.— it’s good practice to return errors instead, and only panic or exit
+	directly from main().
+
+	As I said above, my general recommendation is to log your output to standard streams and
+	redirect the output to a file at runtime. But if you don’t want to do this, you can always open a
+	file in Go and use it as your log destination. As a rough example:
+	------------------------------------------------------------------------
+	|	f, err := os.OpenFile("/tmp/info.log", os.O_RDWR|os.O_CREATE, 0666)
+	|	if err != nil {
+	|		log.Fatal(err)
+	|	}
+	|	defer f.Close()
+	|	infoLog := log.New(f, "INFO\t", log.Ldate|log.Ltime)
+	------------------------------------------------------------------------
+
+*/
+
 package main
 
 import (
@@ -64,8 +82,18 @@ func main() {
 	mux.HandleFunc("/blog/view", blogView)
 	mux.HandleFunc("/blog/create", blogCreate)
 
+	/*
+		set	the ErrorLog field so that the server now uses the custom errorLog logger in
+		the event of any problems.
+	*/
+	srv := http.Server{
+		Addr:     *addr,
+		ErrorLog: errorLog,
+		Handler:  mux,
+	}
+
 	// Previously we done this in this way : log.Printf("Server running at PORT: %s \n", *addr)
 	infoLog.Printf("Server running at PORT: %s \n", *addr)
-	err := http.ListenAndServe(*addr, mux)
+	err := srv.ListenAndServe()
 	errorLog.Fatal(err)
 }

@@ -25,6 +25,13 @@ import (
 	"os"
 )
 
+// application struct to hold the application-wide dependencies for the web application. 
+// lower case struct name for internal use 
+type application struct {
+	infoLog *log.Logger
+	errorLog *log.Logger
+}
+
 func main() {
 	/*
 		Importent Notes
@@ -72,15 +79,21 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
+	// Initialize a new instance of our application struct, containing the dependencies.
+	app := &application{
+		infoLog: infoLog,
+		errorLog: errorLog,
+	}
+
 	mux := http.NewServeMux()
 
 	//create a fileserver. for serving static files as a http handler form the root of the application.
 	fileserver := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileserver))
 
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/blog/view", blogView)
-	mux.HandleFunc("/blog/create", blogCreate)
+	mux.HandleFunc("/", app.home)
+	mux.HandleFunc("/blog/view", app.blogView)
+	mux.HandleFunc("/blog/create", app.blogCreate)
 
 	/*
 		set	the ErrorLog field so that the server now uses the custom errorLog logger in

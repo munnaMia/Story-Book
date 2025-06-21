@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
+func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	/*
 		r.URL.Path != "/"
 		=================
@@ -30,19 +29,19 @@ func home(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 
 	if err != nil {
-		log.Println(err.Error())
+		app.errorLog.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", 500)
+		app.errorLog.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
 
-func blogView(w http.ResponseWriter, r *http.Request) {
+func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 	// id which given by user should be a int and bigger then 0.
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
@@ -53,7 +52,7 @@ func blogView(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Displaying a specific blog by id : %d", id)
 }
 
-func blogCreate(w http.ResponseWriter, r *http.Request) {
+func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		/*
 			r.Method != "POST"

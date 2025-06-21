@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -44,6 +45,15 @@ func main() {
 	*/
 	flag.Parse()
 
+	/*
+		log.new()
+		---------
+
+		this is used to create custom logger. it take destination where to write , massage, other information like data and time
+	*/
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
 	mux := http.NewServeMux()
 
 	//create a fileserver. for serving static files as a http handler form the root of the application.
@@ -54,7 +64,8 @@ func main() {
 	mux.HandleFunc("/blog/view", blogView)
 	mux.HandleFunc("/blog/create", blogCreate)
 
-	log.Printf("Server running at PORT: %s \n", *addr)
+	// Previously we done this in this way : log.Printf("Server running at PORT: %s \n", *addr)
+	infoLog.Printf("Server running at PORT: %s \n", *addr)
 	err := http.ListenAndServe(*addr, mux)
-	log.Fatal(err)
+	errorLog.Fatal(err)
 }

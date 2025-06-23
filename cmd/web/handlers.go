@@ -16,7 +16,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		to prevent this happen we use this line.
 	*/
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w) 
 		return
 	}
 
@@ -29,15 +29,13 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 
 	if err != nil {
-		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 	}
 }
 
@@ -45,7 +43,7 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 	// id which given by user should be a int and bigger then 0.
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -77,8 +75,9 @@ func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte("Method Not Allowed"))
 		*/
 		w.Header().Set("Allow", http.MethodPost)
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
+
 	w.Write([]byte("Create a new blog..."))
 }

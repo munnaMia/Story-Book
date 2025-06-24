@@ -85,16 +85,6 @@ func main() {
 		errorLog: errorLog,
 	}
 
-	mux := http.NewServeMux()
-
-	//create a fileserver. for serving static files as a http handler form the root of the application.
-	fileserver := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileserver))
-
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/blog/view", app.blogView)
-	mux.HandleFunc("/blog/create", app.blogCreate)
-
 	/*
 		set	the ErrorLog field so that the server now uses the custom errorLog logger in
 		the event of any problems.
@@ -102,7 +92,7 @@ func main() {
 	srv := http.Server{
 		Addr:     *addr,
 		ErrorLog: errorLog,
-		Handler:  mux,
+		Handler:  app.routes(),
 	}
 
 	// Previously we done this in this way : log.Printf("Server running at PORT: %s \n", *addr)

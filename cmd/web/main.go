@@ -25,10 +25,10 @@ import (
 	"os"
 )
 
-// application struct to hold the application-wide dependencies for the web application. 
-// lower case struct name for internal use 
+// application struct to hold the application-wide dependencies for the web application.
+// lower case struct name for internal use
 type application struct {
-	infoLog *log.Logger
+	infoLog  *log.Logger
 	errorLog *log.Logger
 }
 
@@ -81,7 +81,7 @@ func main() {
 
 	// Initialize a new instance of our application struct, containing the dependencies.
 	app := &application{
-		infoLog: infoLog,
+		infoLog:  infoLog,
 		errorLog: errorLog,
 	}
 

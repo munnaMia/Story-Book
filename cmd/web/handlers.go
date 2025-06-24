@@ -16,7 +16,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		to prevent this happen we use this line.
 	*/
 	if r.URL.Path != "/" {
-		app.notFound(w) 
+		app.notFound(w)
 		return
 	}
 

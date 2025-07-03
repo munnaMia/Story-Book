@@ -1,0 +1,58 @@
+In this project i will going with PSQL.
+---------------------------------------
+
+Open Database(CLI) :
+---------------
+    MySQL: mysql -u root -p
+
+
+create a database :
+-------------------
+    MySQL: CREATE DATABASE storybook CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+connect with storybook db:
+--------------------------
+    MySQL: USE storybook
+
+
+Create table :
+--------------
+    MySQL: quary :
+        CREATE TABLE blogs (
+            id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            title VARCHAR(100) NOT NULL,
+            content TEXT NOT NULL,
+            created DATETIME NOT NULL,
+            expires DATETIME NOT NULL
+        );
+
+
+Create Index:
+-------------
+    SQL: CREATE INDEX idx_name ON table_name(fields_name);
+        Ex: CREATE INDEX idx_blogs_created ON blogs(created);
+
+
+Insert Operation:
+-----------------
+    SQL: INSERT INTO blogs(title, content, created, expires) VALUES (
+        'test blog 01',
+        'Over the wintry
+        forest, winds howl in rage
+        with no leaves to blow.
+
+        – Natsume Soseki',
+
+        UTC_TIMESTAMP(),
+        DATE_ADD(UTC_TIMESTAMP(), INTERVAL 365 DAY)
+    );
+
+
+Create new USER: 
+----------------
+    MySQL:  CREATE USER 'webhost';
+            GRANT SELECT, INSERT, UPDATE, DELETE ON snippetbox.* TO 'web'@'localhost';
+            -- Important: Make sure to swap 'pass' with a password of your own choosing.
+            ALTER USER 'web'@'localhost' IDENTIFIED BY 'pass';
+

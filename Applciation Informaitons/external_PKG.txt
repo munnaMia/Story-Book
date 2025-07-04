@@ -1,0 +1,9 @@
+Download pkg:
+-------------
+    use 'go get' command
+    go get github.com/go-sql-driver/mysql@v1
+        - here @v1 is e postfixing the package path with @v1 to indicate that we 
+        want to download the latest available version of the package with the major 
+        release number 1
+        - go get github.com/go-sql-driver/mysql -> if you want the latest version.
+        - go get github.com/go-sql-driver/mysql@v1.0.3 -> for secifice version.

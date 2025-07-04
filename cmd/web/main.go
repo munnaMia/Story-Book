@@ -26,6 +26,7 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/munnaMia/Story-Book/internal/model"
 )
 
 // application struct to hold the application-wide dependencies for the web application.
@@ -33,6 +34,7 @@ import (
 type application struct {
 	infoLog  *log.Logger
 	errorLog *log.Logger
+	blogs    *model.BlogModel
 }
 
 func main() {
@@ -100,6 +102,7 @@ func main() {
 	app := &application{
 		infoLog:  infoLog,
 		errorLog: errorLog,
+		blogs:    &model.BlogModel{DB: db},
 	}
 
 	/*

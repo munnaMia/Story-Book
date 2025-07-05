@@ -59,6 +59,11 @@ func main() {
 	*/
 	addr := flag.String("addr", "localhost:8080", "HTTP network address")
 
+	/*
+		Note: A quirk of our MySQL driver is that we need to use the parseTime=true parameter
+		in our DSN to force it to convert TIME and DATE fields to time.Time. Otherwise it returns
+		these as []byte objects. This is one of the many driver-specific parameters that it offers.
+	*/
 	dsn := flag.String("dsn", "webhost:pass@/storybook?parseTime=true", "MySQL data source name")
 
 	/*

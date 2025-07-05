@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/munnaMia/Story-Book/internal/model"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +50,18 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Displaying a specific blog by id : %d", id)
+	blog, err := app.blogs.Get(id)
+
+	if err != nil {
+		if errors.Is(err, model.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	fmt.Fprintf(w, "%+v", blog)
 }
 
 func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {

@@ -83,13 +83,18 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// instance of a templateData struct holding the snippet data.
+	data := &templateData{
+		Blog: blog,
+	}
+
 	// HTML templates, any dynamic data that you pass in is represented by the .
 	// character (referred to as dot).
 	// In this specific case, the underlying type of dot will be a models.Blog struct. When the
 	// underlying type of dot is a struct, you can render (or yield) the value of any exported field in
 	// your templates by postfixing dot with the field name. So, because our models.Snippet struct
 	// has a Title field, we could yield the snippet title by writing {{.Title}} in our templates.
-	err = ts.ExecuteTemplate(w, "base", blog)
+	err = ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)
 	}

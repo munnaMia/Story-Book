@@ -21,6 +21,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -32,9 +33,10 @@ import (
 // application struct to hold the application-wide dependencies for the web application.
 // lower case struct name for internal use
 type application struct {
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	blogs    *model.BlogModel
+	infoLog       *log.Logger
+	errorLog      *log.Logger
+	blogs         *model.BlogModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -103,11 +105,18 @@ func main() {
 
 	defer db.Close()
 
+	// Initialize a new template cache...
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	// Initialize a new instance of our application struct, containing the dependencies.
 	app := &application{
-		infoLog:  infoLog,
-		errorLog: errorLog,
-		blogs:    &model.BlogModel{DB: db},
+		infoLog:       infoLog,
+		errorLog:      errorLog,
+		blogs:         &model.BlogModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	/*

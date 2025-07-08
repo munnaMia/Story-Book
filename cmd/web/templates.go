@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"path/filepath"
 
@@ -57,10 +56,6 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		// Add the template set to the map, using the name of the page
 		// (like 'home.html') as the key.
 		cache[name] = ts
-	}
-
-	for key, value := range cache {
-		fmt.Println(key , " = ", value)
 	}
 
 	// return the map

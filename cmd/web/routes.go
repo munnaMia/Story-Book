@@ -14,5 +14,5 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/blog/view", app.blogView)
 	mux.HandleFunc("/blog/create", app.blogCreate)
 
-	return secureHeaders(mux)
+	return app.logRequest(secureHeaders(mux))
 }

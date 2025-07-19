@@ -106,10 +106,29 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
+	// First we call r.ParseForm() which adds any data in POST request bodies
+	// to the r.PostForm map. This also works in the same way for PUT and PATCH
+	// requests. If there are any errors, we use our app.ClientError() helper to
+	// send a 400 Bad Request response to the user.
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
 	//DUMY DATA for test purpose.
-	title := "O snail"
-	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
-	expires := 7
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	// The r.PostForm.Get() method always returns the form data as a *string*.
+	// However, we're expecting our expires value to be a number, and want to
+	// represent it in our Go code as an integer. So we need to manually covert
+	// the form data to an integer using strconv.Atoi(), and we send a 400 Bad
+	// Request response if the conversion fails.
+	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
 
 	// pass dumy data to insert method to test
 	id, err := app.blogs.Insert(title, content, expires)
@@ -119,5 +138,5 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect the user to the relevant page for the snippet.
-	http.Redirect(w, r, fmt.Sprintf("/blog/view?id=%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/blog/view/%d", id), http.StatusSeeOther)
 }

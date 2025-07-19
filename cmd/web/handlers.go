@@ -73,7 +73,9 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("create blog from creating a new blog..."))
+	data := app.newTemplateData(r)
+
+	app.render(w, http.StatusOK, "create.html", data)
 }
 
 func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {

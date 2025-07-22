@@ -18,6 +18,7 @@ type templateData struct {
 	CurrentYear int
 	Blog        *model.Blog
 	Blogs       []*model.Blog
+	Form        any
 }
 
 // Create a humanDate function which returns a nicely formatted string

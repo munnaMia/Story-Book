@@ -5,10 +5,24 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/munnaMia/Story-Book/internal/model"
 )
+
+// Define a snippetCreateForm struct to represent the form data and validation
+// errors for the form fields. Note that all the struct fields are deliberately
+// exported (i.e. start with a capital letter). This is because struct fields
+// must be exported in order to be read by the html/template package when
+// rendering the template.
+type blogCreateForm struct {
+	Title       string
+	Content     string
+	Expires     int
+	FieldErrors map[string]string
+}
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	/*
@@ -74,6 +88,13 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
+	// Initialize a new createSnippetForm instance and pass it to the template.
+	// Notice how this is also a great opportunity to set any default or
+	// 'initial' values for the form --- here we set the initial value for the
+	// snippet expiry to 365 days.
+	data.Form = blogCreateForm{
+		Expires: 365,
+	}
 
 	app.render(w, http.StatusOK, "create.html", data)
 }
@@ -116,9 +137,6 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//DUMY DATA for test purpose.
-	title := r.PostForm.Get("title")
-	content := r.PostForm.Get("content")
 	// The r.PostForm.Get() method always returns the form data as a *string*.
 	// However, we're expecting our expires value to be a number, and want to
 	// represent it in our Go code as an integer. So we need to manually covert
@@ -130,8 +148,39 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// pass dumy data to insert method to test
-	id, err := app.blogs.Insert(title, content, expires)
+	// fieldErrors := make(map[string]string) // Initialize a map to hold any validation errors for the form fields.
+	form := blogCreateForm{
+		Title:       r.PostForm.Get("title"),
+		Content:     r.PostForm.Get("content"),
+		Expires:     expires,
+		FieldErrors: map[string]string{},
+	}
+
+	if strings.TrimSpace(form.Title) == "" {
+		form.FieldErrors["title"] = "This field can't be blank"
+	} else if utf8.RuneCountInString(form.Title) > 100 {
+		form.FieldErrors["title"] = "This field cannot be more than 100 characters long"
+	}
+
+	if strings.TrimSpace(form.Content) == "" {
+		form.FieldErrors["content"] = "This field cannot be blank"
+	}
+
+	if form.Expires != 1 && form.Expires != 7 && form.Expires != 365 {
+		form.FieldErrors["expires"] = "This field must equal 1, 7 or 365"
+	}
+
+	// If there are any errors, dump them in a plain text HTTP response and
+	// return from the handler.
+	if len(form.FieldErrors) > 0 {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, http.StatusUnprocessableEntity, "create.html", data)
+		return
+	}
+
+	// pass data to insert method
+	id, err := app.blogs.Insert(form.Title, form.Content, form.Expires)
 	if err != nil {
 		app.serverError(w, err)
 		return

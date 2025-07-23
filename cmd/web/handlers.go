@@ -16,11 +16,13 @@ import (
 // exported (i.e. start with a capital letter). This is because struct fields
 // must be exported in order to be read by the html/template package when
 // rendering the template.
+// The struct tag `form:"-"`
+// tells the decoder to completely ignore a field during decoding.
 type blogCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -130,28 +132,22 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 	// to the r.PostForm map. This also works in the same way for PUT and PATCH
 	// requests. If there are any errors, we use our app.ClientError() helper to
 	// send a 400 Bad Request response to the user.
-	err := r.ParseForm()
+	// err := r.ParseForm()
+	// if err != nil {
+	// 	app.clientError(w, http.StatusBadRequest)
+	// 	return
+	// }
+
+	var form blogCreateForm
+
+	// Call the Decode() method of the form decoder, passing in the current
+	// request and *a pointer* to our snippetCreateForm struct. This will
+	// essentially fill our struct with the relevant values from the HTML form.
+	// If there is a problem, we return a 400 Bad Request response to the client.
+	err := app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
-	}
-
-	// The r.PostForm.Get() method always returns the form data as a *string*.
-	// However, we're expecting our expires value to be a number, and want to
-	// represent it in our Go code as an integer. So we need to manually covert
-	// the form data to an integer using strconv.Atoi(), and we send a 400 Bad
-	// Request response if the conversion fails.
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
-
-	// fieldErrors := make(map[string]string) // Initialize a map to hold any validation errors for the form fields.
-	form := blogCreateForm{
-		Title:   r.PostForm.Get("title"),
-		Content: r.PostForm.Get("content"),
-		Expires: expires,
 	}
 
 	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")

@@ -81,15 +81,15 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the PopString() method to retrieve the value for the "flash" key.
-	// PopString() also deletes the key and value from the session data, so it
-	// acts like a one-time fetch. If there is no matching key in the session
-	// data this will return the empty string.
-	flash := app.sessionManager.PopString(r.Context(), "flash")
+	// // Use the PopString() method to retrieve the value for the "flash" key.
+	// // PopString() also deletes the key and value from the session data, so it
+	// // acts like a one-time fetch. If there is no matching key in the session
+	// // data this will return the empty string.
+	// flash := app.sessionManager.PopString(r.Context(), "flash")
 
 	data := app.newTemplateData(r)
 	data.Blog = blog
-	data.Flash = flash// Pass the flash message to the template.
+	// data.Flash = flash// Pass the flash message to the template.
 
 	app.render(w, http.StatusOK, "view.html", data)
 }

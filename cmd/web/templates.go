@@ -19,6 +19,7 @@ type templateData struct {
 	Blog        *model.Blog
 	Blogs       []*model.Blog
 	Form        any
+	Flash       string
 }
 
 // Create a humanDate function which returns a nicely formatted string

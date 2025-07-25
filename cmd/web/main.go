@@ -130,11 +130,11 @@ func main() {
 
 	// Initialize a new instance of our application struct, containing the dependencies.
 	app := &application{
-		infoLog:       infoLog,
-		errorLog:      errorLog,
-		blogs:         &model.BlogModel{DB: db},
-		templateCache: templateCache,
-		formDecoder:   formDecoder,
+		infoLog:        infoLog,
+		errorLog:       errorLog,
+		blogs:          &model.BlogModel{DB: db},
+		templateCache:  templateCache,
+		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 	}
 
